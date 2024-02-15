@@ -8,7 +8,10 @@ import com.banana.AccountsService.persistence.AccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
@@ -23,13 +26,16 @@ public class AccountService implements IAccountService {
 
     @Override
     public Account create(Account account) {
-        Date current_Date = new Date();
-        account.setOpeningDate(current_Date);
+       // Date current_Date = new Date();
+       // account.setOpeningDate(current_Date);
+
         return accountRepository.save(account);
     }
 
     @Override
     public List<Account> getAccounts() {
+        List<Account> accountList = accountRepository.findAll();
+        if(accountList.isEmpty()) throw new AccountNotfoundException();
         return accountRepository.findAll();
     }
 
@@ -43,7 +49,9 @@ public class AccountService implements IAccountService {
 
     @Override
     public List<Account> getAccountByOwnerId(Long ownerId) {
-        return accountRepository.findByOwnerId(ownerId);
+        List<Account> accountList = accountRepository.findByOwnerId(ownerId);
+        if(accountList.isEmpty()) throw new AccountNotfoundException();
+        return accountList;
     }
 
     @Override
@@ -80,6 +88,7 @@ public class AccountService implements IAccountService {
     @Override
     public void deleteAccountsUsingOwnerId(Long ownerId) {
         List<Account> accounts = accountRepository.findByOwnerId(ownerId);
+        if(accounts.isEmpty()) throw new AccountNotfoundException();
         for (Account account : accounts) {
             this.accountRepository.delete(account);
         }
