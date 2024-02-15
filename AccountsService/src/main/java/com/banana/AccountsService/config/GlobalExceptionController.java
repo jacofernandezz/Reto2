@@ -4,6 +4,7 @@ import com.banana.AccountsService.exception.AccountNotfoundException;
 import com.banana.AccountsService.exception.GlobalException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -48,7 +49,7 @@ public class GlobalExceptionController {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     ResponseEntity<Object> methodArgumentTypeMismatchExceptionHandler(MethodArgumentTypeMismatchException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(exception.getMessage());
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -56,4 +57,8 @@ public class GlobalExceptionController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    ResponseEntity<Object> httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException exception) {
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(exception.getMessage());
+    }
 }

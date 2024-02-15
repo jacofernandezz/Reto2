@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "accounts")
+@XmlRootElement
 public class Account {
 
     @Id
