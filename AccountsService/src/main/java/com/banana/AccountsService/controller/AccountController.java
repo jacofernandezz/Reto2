@@ -1,7 +1,14 @@
 package com.banana.AccountsService.controller;
 
+import com.banana.AccountsService.assembler.AccountModelAssembler;
 import com.banana.AccountsService.model.Account;
 import com.banana.AccountsService.services.AccountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,21 +23,38 @@ import java.util.List;
 @RestController
 @RequestMapping("/accounts")
 @Validated
+@Tag(name = "API de cuentas", description = "Endpoints para consumir cuentas")
 public class AccountController {
 
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private AccountModelAssembler accountModelAssembler;
 
     @PostMapping( consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<Account> createAccount(@RequestBody @Valid Account account) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(accountService.create(account));
+    @Operation(summary = "Para crear una nueva cuenta", description = "Devuelve la cuenta creada")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cuando la cuenta se crea correctamente."),
+            @ApiResponse(responseCode = "412", description = "Cuando hay un error en una precondición.")
+    })
+    public ResponseEntity<?> createAccount(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Datos de la cuenta a crear", required = true,
+                    content = @Content(schema = @Schema(implementation = Account.class)))
+            @RequestBody @Valid Account account) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountModelAssembler.toModel(accountService.create(account)));
     }
 
     @GetMapping
-    public ResponseEntity<List<Account>> getAccounts() {
-        return ResponseEntity.status(HttpStatus.OK).body(accountService.getAccounts());
+    @Operation(summary = "Para pedir todos las cuentas", description = "Devuelve todas las cuentas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cuando hay cuentas a devolver."),
+            @ApiResponse(responseCode = "404", description = "Cuando no hay cuentas a devolver.")
+    })
+    public ResponseEntity<?> getAccounts() {
+        return ResponseEntity.status(HttpStatus.OK).body(accountModelAssembler.toCollectionModel(accountService.getAccounts()));
     }
 
     @GetMapping("/{id}")
@@ -59,13 +83,13 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteAccount(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<Void> deleteAccount(@PathVariable @Min(1) Long id) {
         accountService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/owner/{ownerId}")
-    public ResponseEntity deleteAccountsByOwnerId(@PathVariable @Min(1) Long ownerId) {
+    public ResponseEntity<Void> deleteAccountsByOwnerId(@PathVariable @Min(1) Long ownerId) {
         accountService.deleteAccountsUsingOwnerId(ownerId);
         return ResponseEntity.noContent().build();
     }

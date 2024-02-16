@@ -14,7 +14,7 @@ import java.util.Date;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {OpeningDate.Validator.class})
 public @interface OpeningDate {
-    String message() default "La fecha debe ser anterior a la fecha actual";
+    String message() default "{openingDate.afterNow}";
 
     Class<?>[] groups() default {};
 
@@ -27,6 +27,11 @@ public @interface OpeningDate {
 
         @Override
         public boolean isValid(final Date openingDate, final ConstraintValidatorContext context) {
+            if (openingDate == null) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate("{openingDate.not.null}").addConstraintViolation();
+                return false;
+            }
             Date currentDate = new Date();
             return openingDate.before(currentDate);
         }

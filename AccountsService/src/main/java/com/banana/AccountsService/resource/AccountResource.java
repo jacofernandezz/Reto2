@@ -1,12 +1,11 @@
-package com.banana.AccountsService.model;
+package com.banana.AccountsService.resource;
 
 import com.banana.AccountsService.constraints.OpeningDate;
+import com.banana.AccountsService.model.Customer;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -16,18 +15,15 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "accounts")
 @XmlRootElement
 @Schema(name = "Modelo de cuenta", description = "Representa una cuenta bancaria.")
-public class Account {
+public class AccountResource extends RepresentationModel<AccountResource> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Min(1)
     @Schema(name = "Identificador de la cuenta", description = "Indentificador de la cuenta basada en números entero positivos", example = "432")
     private Long id;

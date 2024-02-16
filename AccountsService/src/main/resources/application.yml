@@ -2,6 +2,9 @@ spring:
   application.name: AccountService
   profiles.active: dev
 
+products.openapi:
+  dev-url: http://www.dev.microcompany.es
+  prod-url: http://www.prod.microcompany.es
 ---
 
 spring:
@@ -25,7 +28,11 @@ spring:
 
 server:
   port: 9900
-#  servlet.contextPath: /api
+  ssl:
+      key-store: keystore2.p12
+      key-store-password: abc123.
+      keyStoreType: PKCS12
+      keyAlias: tomcat
 
 logging:
   level.root: INFO

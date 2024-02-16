@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +60,11 @@ public class GlobalExceptionController {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     ResponseEntity<Object> httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException exception) {
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    ResponseEntity<Object> validationExceptionHandler(ValidationException exception) {
         return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(exception.getMessage());
     }
 }

@@ -1,7 +1,5 @@
 package com.banana.AccountsService.filter;
 
-import org.slf4j.LoggerFactory;
-
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
